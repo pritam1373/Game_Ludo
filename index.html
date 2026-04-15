@@ -221,6 +221,7 @@
     let isRolling = false;
     let hasMoved = true;
     let sixCount = 0;
+    const diceBtn = document.getElementById('dice-btn');
 
     const gameState = {
         red: { pieces: [-1, -1, -1, -1], start: 1, end: 51, home: 100 },
@@ -256,6 +257,7 @@
             if (!activePlayerColors.includes(c)) document.getElementById(`base-${c}`).classList.add('inactive-base');
         });
 
+        diceBtn.textContent = "?";
         drawBoard();
         updateUI();
         render();
@@ -322,7 +324,8 @@
         Object.keys(posMap).forEach(key => {
             posMap[key].forEach((item, i) => {
                 const p = document.createElement('div');
-                p.className = `piece bg-${item.color}-500`;
+                p.className = `piece`;
+                p.style.backgroundColor = `var(--${item.color})`;
                 const isCurrent = item.color === activePlayerColors[currentPlayerIndex];
                 if (isCurrent && !hasMoved && canMove(item.color, item.idx)) p.classList.add('active');
                 
@@ -430,19 +433,20 @@
         dot.style.backgroundColor = `var(--${color})`;
         dot.style.boxShadow = `0 0 30px var(--${color})`;
         document.getElementById('status-text').innerText = `${color}'s turn`;
-        document.getElementById('dice-btn').innerText = "?";
+        diceBtn.textContent = diceValue || "?";
         document.getElementById('rule-tip').innerText = hasMoved ? "Roll the dice" : "Move a piece";
     }
 
-    document.getElementById('dice-btn').onclick = () => {
+    diceBtn.onclick = () => {
         if (isRolling || !hasMoved) return;
         isRolling = true;
-        document.getElementById('dice-btn').classList.add('rolling');
+        diceBtn.classList.add('rolling');
+        diceBtn.textContent = "...";
 
         setTimeout(() => {
             diceValue = Math.floor(Math.random() * 6) + 1;
-            document.getElementById('dice-btn').innerText = diceValue;
-            document.getElementById('dice-btn').classList.remove('rolling');
+            diceBtn.textContent = diceValue;
+            diceBtn.classList.remove('rolling');
             isRolling = false;
             hasMoved = false;
 
@@ -457,7 +461,7 @@
                     sixCount = 0;
                     updateUI();
                     render();
-                }, 1200);
+                }, 1500);
             } else {
                 updateUI();
                 render();
